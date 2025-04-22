@@ -1,0 +1,45 @@
+.header {
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+}
+
+.header__title {
+  font-size: var(--text-60);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+.header__description {
+  font-size: var(--text-24);
+  margin-bottom: 2rem;
+}
+
+.header__search-container {
+  position: relative;
+  width: 100%;
+}
+
+.header__search {
+  font-size: var(--text-16);
+  width: 100%;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.header__search:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #ccc;
+}
+
+.header__search::placeholder {
+  font-size: var(--text-16);
+  font-family: 'Roboto';
+}
+
+.header__search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}

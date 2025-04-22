@@ -1,0 +1,58 @@
+.current {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4rem;
+  margin-bottom: 2rem;
+}
+
+.current__return-link {
+  display: flex;
+  gap: 0.375rem;
+  text-decoration: none;
+  align-items: center;
+  color: var(--color-black);
+  font-size: var(--text-24);
+}
+
+.current__return-link:hover {
+  color: var(--color-green);
+  text-decoration: underline;
+}
+
+.current__return-link:hover svg {
+  fill: var(--color-green);
+}
+
+.current__feedback {
+  display: flex;
+  gap: 1rem;
+  font-size: var(--text-18);
+}
+
+.current__likes,
+.current__dislikes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #9ca3af;
+}
+
+.current__title {
+  margin-bottom: 3rem;
+  font-size: var(--text-40);
+  font-weight: bold;
+}
+
+.current__post-image {
+  width: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+  margin-bottom: 3rem;
+}
+
+.current__post-description {
+  font-size: var(--text-18);
+  margin-bottom: 4rem;
+}

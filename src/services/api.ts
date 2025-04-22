@@ -1,16 +1,10 @@
+import { PostType } from '../types/post'
+
 // Базовый URL JSONPlaceholder API
 const BASE_URL = 'https://jsonplaceholder.typicode.com'
 
-// Интерфейс для описания структуры поста
-export interface Post {
-  id: number // Уникальный идентификатор поста
-  title: string // Заголовок поста
-  body: string // Основное содержимое поста
-  userId: number // ID автора поста
-}
-
-export const getPosts = async (): Promise<Post[]> => {
-  const response = await fetch(`${BASE_URL}/posts`)
+export const getPosts = async (): Promise<PostType[]> => {
+  const response = await fetch(`${BASE_URL}/posts?_limit=5`)
 
   // Проверка на ошибки HTTP (статусы 4xx/5xx)
   if (!response.ok) {
@@ -20,7 +14,7 @@ export const getPosts = async (): Promise<Post[]> => {
   return await response.json()
 }
 
-export const searchPosts = async (query: string): Promise<Post[]> => {
+export const searchPosts = async (query: string): Promise<PostType[]> => {
   // Кодируем поисковый запрос для безопасной передачи в URL
   const encodedQuery = encodeURIComponent(query)
 

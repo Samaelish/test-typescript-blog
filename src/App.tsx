@@ -1,13 +1,17 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home.tsx'
-import Post from './pages/Post.tsx'
+import CurrentPost from './pages/CurrentPost.tsx'
+import { PostProvider } from './contexts/PostContext.tsx'
+import Post from './components/Post.tsx'
 
 function App() {
   return (
-    <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/post' element={<Post />} />
-    </Routes>
+    <PostProvider>
+      <Routes>
+        <Route path='/dsfds' element={<Home />} />
+        <Route path='/' element={<CurrentPost />} />
+      </Routes>
+    </PostProvider>
   )
 }
 
