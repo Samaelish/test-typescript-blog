@@ -10,6 +10,7 @@ export interface PostContextType {
   reactions: Record<number, 'like' | 'dislike' | null>
   handleLike: (postId: number) => void
   handleDislike: (postId: number) => void
+  // поиск не реализован, потому что jsonplaceholder не поддерживает поиск по title
   searchQuery: string
   setSearchQuery: (query: string) => void
 }
@@ -19,7 +20,7 @@ const PostContext = createContext<PostContextType | undefined>(undefined)
 export const usePostContext = () => {
   const context = useContext(PostContext)
   if (!context) {
-    throw new Error('usePostContext must be used within a PostProvider')
+    throw new Error('Контекстный хук должен быть в провайдере')
   }
   return context
 }
@@ -58,6 +59,7 @@ export const PostProvider = ({ children }: PostProviderProps) => {
         setIsLoading(true)
         setError(null)
 
+        // в jsonplaceholder нет поиска по title, но с другим апи могу попробовать это реализовать
         const url = new URL(`${BASE_URL}/posts`)
         url.searchParams.append('_limit', '5')
         if (searchQuery) {
@@ -67,14 +69,14 @@ export const PostProvider = ({ children }: PostProviderProps) => {
         const response = await fetch(url.toString(), { signal })
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch posts. Status: ${response.status}`)
+          throw new Error(`Ошибка при загрузке постов. Статус: ${response.status}`)
         }
 
         const data = (await response.json()) as PostType[]
         setPosts(data)
       } catch (err) {
         if (signal.aborted) return
-        setError(err instanceof Error ? err.message : 'Failed to fetch posts')
+        setError(err instanceof Error ? err.message : 'Не получилось загрузить посты')
       } finally {
         if (!signal.aborted) {
           setIsLoading(false)
@@ -94,6 +96,7 @@ export const PostProvider = ({ children }: PostProviderProps) => {
     reactions,
     handleLike,
     handleDislike,
+    // поиск не реализован, потому что jsonplaceholder не поддерживает поиск по title
     searchQuery,
     setSearchQuery,
   }
