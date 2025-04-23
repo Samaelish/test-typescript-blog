@@ -1,15 +1,23 @@
+import React from 'react'
 import { usePostContext } from '../contexts/PostContext'
 import '../css/Header.css'
 
-const Header = () => {
+const Header: React.FC = () => {
   const { searchQuery, setSearchQuery } = usePostContext()
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
 
   return (
     <header className='header'>
       <div className='container'>
         <h1 className='header__title'>Блог</h1>
         <p className='header__description'>
-          Здесь мы делимся интересными кейсами из наших проектов, пишем про IT, а также переводим зарубежные статьи
+          1. На JSONPlaceholder нет фильтрации по названию, могу сделать фильтрацию на клиенте просто через рендер тех
+          постов, у которых совпадает title. <br />
+          2. Рандомное число лайков <br />
+          Остальной функционал по тз сохранён. SCSS, Tailwind не использовал. Redux не нужен, достаточно Context.
         </p>
         <div className='header__search-container'>
           <svg
@@ -31,11 +39,12 @@ const Header = () => {
             className='header__search'
             id='header__search'
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
     </header>
   )
 }
+
 export default Header

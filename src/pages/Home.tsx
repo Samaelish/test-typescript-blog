@@ -1,7 +1,8 @@
+import React from 'react'
 import Header from '../components/Header'
 import Posts from '../components/Posts'
 
-const Home = () => {
+const Home: React.FC = () => {
   return (
     <>
       <Header />
@@ -9,4 +10,5 @@ const Home = () => {
     </>
   )
 }
+
 export default Home

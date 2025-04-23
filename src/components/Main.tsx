@@ -35,7 +35,7 @@ const Main = ({ post }: Props): ReactElement => {
                     />
                   </svg>
 
-                  <span>254</span>
+                  <span>34</span>
                 </div>
                 <div className='main__dislikes'>
                   <svg

@@ -1,9 +1,10 @@
+import React from 'react'
 import { usePostContext } from '../contexts/PostContext'
 import Post from './Post'
 import Main from './Main'
 import '../css/Posts.css'
 
-const Posts = () => {
+const Posts: React.FC = () => {
   const { posts, isLoading, error } = usePostContext()
 
   return (
@@ -13,7 +14,7 @@ const Posts = () => {
         <div className='loading'>Загрузка...</div>
       ) : (
         <div>
-          <Main post={posts[0]} />
+          {posts.length > 0 && <Main post={posts[0]} />}
           <section className='posts'>
             <div className='container'>
               <div className='posts__grid'>
@@ -28,4 +29,5 @@ const Posts = () => {
     </>
   )
 }
+
 export default Posts
