@@ -1,7 +1,6 @@
-import { createContext, useState, useContext, useEffect, ReactNode } from 'react'
+import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react'
 import { PostType } from '../types/post'
 
-// Базовый URL JSONPlaceholder API, для удобства можно поменять потом на другой юрл
 const BASE_URL = 'https://jsonplaceholder.typicode.com'
 
 export interface PostContextType {
@@ -20,7 +19,7 @@ const PostContext = createContext<PostContextType | undefined>(undefined)
 export const usePostContext = () => {
   const context = useContext(PostContext)
   if (!context) {
-    throw new Error('Контекстный хук должен быть в провайдере')
+    throw new Error('usePostContext must be used within a PostProvider')
   }
   return context
 }
@@ -32,48 +31,61 @@ interface PostProviderProps {
 export const PostProvider = ({ children }: PostProviderProps) => {
   const [posts, setPosts] = useState<PostType[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  // лайк-дизлайк состояние
+  const [error, setError] = useState<string | null>(null)
   const [reactions, setReactions] = useState<Record<number, 'like' | 'dislike' | null>>({})
   const [searchQuery, setSearchQuery] = useState('')
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        // Юрл для проверки поиск
-        // Вручную прописал лимит в 5, потому что так в макете, но это просто для примера
-        const url = `${BASE_URL}/posts?${searchQuery ? `q=${encodeURIComponent(searchQuery)}&` : ''}_limit=5`
-        const response = await fetch(url)
-
-        if (!response.ok) throw new Error(`Ошибка загрузки постов. Код: ${response.status}`)
-
-        const data = await response.json()
-
-        setPosts(data)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchPosts()
-  }, [searchQuery])
-
-  // Хендлеры на реакции
-  const handleLike = (postId: number) => {
+  const handleLike = useCallback((postId: number) => {
     setReactions(prev => ({
       ...prev,
       [postId]: prev[postId] === 'like' ? null : 'like',
     }))
-  }
+  }, [])
 
-  const handleDislike = (postId: number) => {
+  const handleDislike = useCallback((postId: number) => {
     setReactions(prev => ({
       ...prev,
       [postId]: prev[postId] === 'dislike' ? null : 'dislike',
     }))
-  }
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const { signal } = controller
+
+    const fetchPosts = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        const url = new URL(`${BASE_URL}/posts`)
+        url.searchParams.append('_limit', '5')
+        if (searchQuery) {
+          url.searchParams.append('q', searchQuery)
+        }
+
+        const response = await fetch(url.toString(), { signal })
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch posts. Status: ${response.status}`)
+        }
+
+        const data = (await response.json()) as PostType[]
+        setPosts(data)
+      } catch (err) {
+        if (signal.aborted) return
+        setError(err instanceof Error ? err.message : 'Failed to fetch posts')
+      } finally {
+        if (!signal.aborted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    fetchPosts()
+
+    return () => controller.abort()
+  }, [searchQuery])
 
   const value: PostContextType = {
     posts,
