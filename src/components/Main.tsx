@@ -1,8 +1,8 @@
-import '../css/Main.css'
 import { Link } from 'react-router-dom'
 import { ReactElement } from 'react'
 import { PostType } from '../types/post'
 import { usePostContext } from '../contexts/PostContext'
+import '../css/Main.css'
 
 interface Props {
   post: PostType
