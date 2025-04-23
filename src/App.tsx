@@ -1,15 +1,14 @@
+import { PostProvider } from './contexts/PostContext.tsx'
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home.tsx'
-import CurrentPost from './pages/CurrentPost.tsx'
-import { PostProvider } from './contexts/PostContext.tsx'
-import Post from './components/Post.tsx'
+import PostDetail from './pages/PostDetail.tsx'
 
 function App() {
   return (
     <PostProvider>
       <Routes>
-        <Route path='/dsfds' element={<Home />} />
-        <Route path='/' element={<CurrentPost />} />
+        <Route path='/' element={<Home />} />
+        <Route path='/post/:id' element={<PostDetail />} />
       </Routes>
     </PostProvider>
   )

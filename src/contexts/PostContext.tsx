@@ -1,11 +1,18 @@
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react'
 import { PostType } from '../types/post'
 
+// Базовый URL JSONPlaceholder API, для удобства можно поменять потом на другой юрл
+const BASE_URL = 'https://jsonplaceholder.typicode.com'
+
 export interface PostContextType {
   posts: PostType[]
-  addToFavorites: (post: PostType) => void
-  removeFromFavorites: (postId: number) => void
-  isFavorite: (postId: number) => boolean
+  isLoading: boolean
+  error: string | null
+  reactions: Record<number, 'like' | 'dislike' | null>
+  handleLike: (postId: number) => void
+  handleDislike: (postId: number) => void
+  searchQuery: string
+  setSearchQuery: (query: string) => void
 }
 
 const PostContext = createContext<PostContextType | undefined>(undefined)
@@ -13,7 +20,7 @@ const PostContext = createContext<PostContextType | undefined>(undefined)
 export const usePostContext = () => {
   const context = useContext(PostContext)
   if (!context) {
-    throw new Error('usePostContext must be used within a PostProvider')
+    throw new Error('Контекстный хук должен быть в провайдере')
   }
   return context
 }
@@ -24,40 +31,59 @@ interface PostProviderProps {
 
 export const PostProvider = ({ children }: PostProviderProps) => {
   const [posts, setPosts] = useState<PostType[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+  // лайк-дизлайк состояние
+  const [reactions, setReactions] = useState<Record<number, 'like' | 'dislike' | null>>({})
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-    const storedPosts = localStorage.getItem('posts')
-    if (storedPosts) {
+    const fetchPosts = async () => {
       try {
-        const parsedPosts = JSON.parse(storedPosts) as PostType[]
-        setPosts(parsedPosts)
-      } catch (error) {
-        console.error('Error parsing posts from localStorage:', error)
+        // Юрл для проверки поиск
+        // Вручную прописал лимит в 5, потому что так в макете, но это просто для примера
+        const url = `${BASE_URL}/posts?${searchQuery ? `q=${encodeURIComponent(searchQuery)}&` : ''}_limit=5`
+        const response = await fetch(url)
+
+        if (!response.ok) throw new Error(`Ошибка загрузки постов. Код: ${response.status}`)
+
+        const data = await response.json()
+
+        setPosts(data)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setIsLoading(false)
       }
     }
-  }, [])
 
-  useEffect(() => {
-    localStorage.setItem('posts', JSON.stringify(posts))
-  }, [posts])
+    fetchPosts()
+  }, [searchQuery])
 
-  const addToFavorites = (post: PostType) => {
-    setPosts(prev => [...prev, post])
+  // Хендлеры на реакции
+  const handleLike = (postId: number) => {
+    setReactions(prev => ({
+      ...prev,
+      [postId]: prev[postId] === 'like' ? null : 'like',
+    }))
   }
 
-  const removeFromFavorites = (postId: number) => {
-    setPosts(prev => prev.filter(post => post.id !== postId))
-  }
-
-  const isFavorite = (postId: number) => {
-    return posts.some(post => post.id === postId)
+  const handleDislike = (postId: number) => {
+    setReactions(prev => ({
+      ...prev,
+      [postId]: prev[postId] === 'dislike' ? null : 'dislike',
+    }))
   }
 
   const value: PostContextType = {
     posts,
-    addToFavorites,
-    removeFromFavorites,
-    isFavorite,
+    isLoading,
+    error,
+    reactions,
+    handleLike,
+    handleDislike,
+    searchQuery,
+    setSearchQuery,
   }
 
   return <PostContext.Provider value={value}>{children}</PostContext.Provider>

@@ -1,23 +1,28 @@
+/* Стили основного контейнера шапки */
 .header {
   margin-top: 4rem;
   margin-bottom: 2rem;
 }
 
+/* Стили заголовка и описания */
 .header__title {
   font-size: var(--text-60);
   font-weight: 600;
   margin-bottom: 1.5rem;
 }
+
 .header__description {
   font-size: var(--text-24);
   margin-bottom: 2rem;
 }
 
+/* Стили контейнера поиска */
 .header__search-container {
   position: relative;
   width: 100%;
 }
 
+/* Стили поисковой строки */
 .header__search {
   font-size: var(--text-16);
   width: 100%;
@@ -36,6 +41,7 @@
   font-family: 'Roboto';
 }
 
+/* Стили иконки поиска */
 .header__search-icon {
   position: absolute;
   left: 12px;

@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { usePostContext } from '../contexts/PostContext'
 import '../css/Header.css'
 
 const Header = () => {
-  const [searchQuery, setSearchQuery] = useState('')
+  const { searchQuery, setSearchQuery } = usePostContext()
 
   return (
     <header className='header'>
