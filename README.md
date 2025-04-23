@@ -6,7 +6,7 @@
 
 # [Фигмакет](https://www.figma.com/file/wD3dyENc6WwTWKB11IGOmO)
 
-# [Хостинг]
+# [Хостинг](https://test-typescript-blog.vercel.app)
 
 ![Превью](public/readmeImg.jpg)
 
