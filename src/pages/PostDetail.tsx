@@ -48,7 +48,7 @@ const PostDetail: React.FC = () => {
                 fill={reaction === 'like' ? '#219653' : '#888'}
               />
             </svg>
-            <span>21</span>
+            <span>{post.title.length}</span>
           </div>
           <div className='current__dislikes'>
             <svg
@@ -65,7 +65,7 @@ const PostDetail: React.FC = () => {
                 fill={reaction === 'dislike' ? '#eb5757' : '#888'}
               />
             </svg>
-            <span>41</span>
+            <span>{post.title.length}</span>
           </div>
         </div>
       </header>

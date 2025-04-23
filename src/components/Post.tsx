@@ -32,7 +32,7 @@ const Post = ({ post }: Props): ReactElement => {
                 />
               </svg>
 
-              <span>26</span>
+              <span>{post.title.length}</span>
             </div>
             <div className='posts__dislikes'>
               <svg
@@ -49,7 +49,7 @@ const Post = ({ post }: Props): ReactElement => {
                 />
               </svg>
 
-              <span>38</span>
+              <span>{post.title.length}</span>
             </div>
           </div>
           <Link to={`/post/${post.id}`} className='posts__readmore-link'>

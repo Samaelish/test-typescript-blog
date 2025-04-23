@@ -16,8 +16,11 @@ const Header: React.FC = () => {
         <p className='header__description'>
           1. На JSONPlaceholder нет фильтрации по названию (в требованиях серверный фильтр), могу сделать фильтрацию на
           клиенте просто через рендер тех постов, у которых совпадает title. <br />
-          2. Рандомное число лайков <br />
-          Остальной функционал по тз сохранён. SCSS, Tailwind не использовал. Redux не нужен, достаточно Context.
+          2. Рандомное число лайков написано через post.title.length, чтобы не писать Math.floor(Math.random()) и это
+          число сохраняется на странице Detail каждого поста
+          <br />
+          Остальной функционал по тз сохранён. SCSS, Tailwind не использовал. Redux не потребовался, достаточно Context,
+          но могу сделать на Redux.
         </p>
         <div className='header__search-container'>
           <svg
@@ -39,7 +42,7 @@ const Header: React.FC = () => {
             className='header__search'
             id='header__search'
             value={searchQuery}
-            onChange={handleSearchChange}
+            onChange={handleSearchChange} // Управляемый инпут
           />
         </div>
       </div>
