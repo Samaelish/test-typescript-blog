@@ -10,9 +10,6 @@ interface Props {
 const Post = ({ post }: Props): ReactElement => {
   const { reactions, handleLike, handleDislike } = usePostContext()
   const reaction = reactions[post?.id] || null
-  function getRandomNumber() {
-    return Math.floor(Math.random() * 51)
-  }
 
   return (
     <article className='posts__card'>
