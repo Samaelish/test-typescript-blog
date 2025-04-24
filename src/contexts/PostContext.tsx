@@ -87,7 +87,7 @@ export const PostProvider = ({ children }: PostProviderProps) => {
     fetchPosts()
 
     return () => controller.abort()
-  }, [searchQuery])
+  }, [])
 
   const value: PostContextType = {
     posts,
