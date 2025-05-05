@@ -42,7 +42,7 @@ const Header: React.FC = () => {
             className='header__search'
             id='header__search'
             value={searchQuery}
-            onChange={handleSearchChange} // Управляемый инпут
+            onChange={handleSearchChange}
           />
         </div>
       </div>
