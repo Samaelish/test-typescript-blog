@@ -4,4 +4,6 @@ export interface PostType {
   title: string // Заголовок поста
   body: string // Основное содержимое поста
   userId: number // ID автора поста
+  likes: number // Количество лайков
+  dislikes: number // Количество дизлайков
 }

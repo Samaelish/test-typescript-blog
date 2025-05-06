@@ -7,10 +7,8 @@ export interface PostContextType {
   posts: PostType[]
   isLoading: boolean
   error: string | null
-  reactions: Record<number, 'like' | 'dislike' | null>
   handleLike: (postId: number) => void
   handleDislike: (postId: number) => void
-  // поиск не реализован, потому что jsonplaceholder не поддерживает поиск по title
   searchQuery: string
   setSearchQuery: (query: string) => void
 }
@@ -33,21 +31,46 @@ export const PostProvider = ({ children }: PostProviderProps) => {
   const [posts, setPosts] = useState<PostType[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [reactions, setReactions] = useState<Record<number, 'like' | 'dislike' | null>>({})
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleLike = useCallback((postId: number) => {
-    setReactions(prev => ({
-      ...prev,
-      [postId]: prev[postId] === 'like' ? null : 'like',
-    }))
+    setPosts(prevPosts =>
+      prevPosts.map(post => {
+        if (post.id === postId) {
+          // Если уже есть лайк - убираем
+          if (post.likes > 0) {
+            return { ...post, likes: post.likes - 1 }
+          }
+          // Если есть дизлайк - убираем его и добавляем лайк
+          return {
+            ...post,
+            likes: post.likes + 1,
+            dislikes: post.dislikes > 0 ? post.dislikes - 1 : 0,
+          }
+        }
+        return post
+      }),
+    )
   }, [])
 
   const handleDislike = useCallback((postId: number) => {
-    setReactions(prev => ({
-      ...prev,
-      [postId]: prev[postId] === 'dislike' ? null : 'dislike',
-    }))
+    setPosts(prevPosts =>
+      prevPosts.map(post => {
+        if (post.id === postId) {
+          // Если уже есть дизлайк - убираем
+          if (post.dislikes > 0) {
+            return { ...post, dislikes: post.dislikes - 1 }
+          }
+          // Если есть лайк - убираем его и добавляем дизлайк
+          return {
+            ...post,
+            dislikes: post.dislikes + 1,
+            likes: post.likes > 0 ? post.likes - 1 : 0,
+          }
+        }
+        return post
+      }),
+    )
   }, [])
 
   useEffect(() => {
@@ -59,7 +82,6 @@ export const PostProvider = ({ children }: PostProviderProps) => {
         setIsLoading(true)
         setError(null)
 
-        // в jsonplaceholder нет поиска по title, но с другим апи могу попробовать это реализовать
         const url = new URL(`${BASE_URL}/posts`)
         url.searchParams.append('_limit', '5')
         if (searchQuery) {
@@ -73,7 +95,13 @@ export const PostProvider = ({ children }: PostProviderProps) => {
         }
 
         const data = (await response.json()) as PostType[]
-        setPosts(data)
+        // Инициализируем счётчики если их нет в ответе API
+        const initializedData = data.map(post => ({
+          ...post,
+          likes: post.likes || 0,
+          dislikes: post.dislikes || 0,
+        }))
+        setPosts(initializedData)
       } catch (err) {
         if (signal.aborted) return
         setError(err instanceof Error ? err.message : 'Не получилось загрузить посты')
@@ -87,16 +115,14 @@ export const PostProvider = ({ children }: PostProviderProps) => {
     fetchPosts()
 
     return () => controller.abort()
-  }, [])
+  }, [searchQuery])
 
   const value: PostContextType = {
     posts,
     isLoading,
     error,
-    reactions,
     handleLike,
     handleDislike,
-    // поиск не реализован, потому что jsonplaceholder не поддерживает поиск по title
     searchQuery,
     setSearchQuery,
   }
