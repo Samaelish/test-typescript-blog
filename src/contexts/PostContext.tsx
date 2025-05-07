@@ -1,3 +1,4 @@
+// PostContext.tsx
 import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react'
 import { PostType } from '../types/post'
 
@@ -7,6 +8,7 @@ export interface PostContextType {
   posts: PostType[]
   isLoading: boolean
   error: string | null
+  reactions: { [key: number]: 'like' | 'dislike' | null }
   handleLike: (postId: number) => void
   handleDislike: (postId: number) => void
   searchQuery: string
@@ -32,46 +34,65 @@ export const PostProvider = ({ children }: PostProviderProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [reactions, setReactions] = useState<{ [key: number]: 'like' | 'dislike' | null }>({})
 
-  const handleLike = useCallback((postId: number) => {
-    setPosts(prevPosts =>
-      prevPosts.map(post => {
-        if (post.id === postId) {
-          // Если уже есть лайк - убираем
-          if (post.likes > 0) {
-            return { ...post, likes: post.likes - 1 }
-          }
-          // Если есть дизлайк - убираем его и добавляем лайк
-          return {
-            ...post,
-            likes: post.likes + 1,
-            dislikes: post.dislikes > 0 ? post.dislikes - 1 : 0,
-          }
-        }
-        return post
-      }),
-    )
-  }, [])
+  const updateReaction = (postId: number, newReaction: 'like' | 'dislike' | null) => {
+    setReactions(prev => ({ ...prev, [postId]: newReaction }))
+  }
 
-  const handleDislike = useCallback((postId: number) => {
-    setPosts(prevPosts =>
-      prevPosts.map(post => {
-        if (post.id === postId) {
-          // Если уже есть дизлайк - убираем
-          if (post.dislikes > 0) {
-            return { ...post, dislikes: post.dislikes - 1 }
+  const handleLike = useCallback(
+    (postId: number) => {
+      setPosts(prevPosts =>
+        prevPosts.map(post => {
+          if (post.id === postId) {
+            const currentReaction = reactions[postId]
+
+            let likes = post.likes
+            let dislikes = post.dislikes
+
+            if (currentReaction === 'like') {
+              likes -= 1
+            } else {
+              if (currentReaction === 'dislike') dislikes -= 1
+              likes += 1
+            }
+
+            return { ...post, likes, dislikes }
           }
-          // Если есть лайк - убираем его и добавляем дизлайк
-          return {
-            ...post,
-            dislikes: post.dislikes + 1,
-            likes: post.likes > 0 ? post.likes - 1 : 0,
+          return post
+        }),
+      )
+      updateReaction(postId, reactions[postId] === 'like' ? null : 'like')
+    },
+    [reactions],
+  )
+
+  const handleDislike = useCallback(
+    (postId: number) => {
+      setPosts(prevPosts =>
+        prevPosts.map(post => {
+          if (post.id === postId) {
+            const currentReaction = reactions[postId]
+
+            let likes = post.likes
+            let dislikes = post.dislikes
+
+            if (currentReaction === 'dislike') {
+              dislikes -= 1
+            } else {
+              if (currentReaction === 'like') likes -= 1
+              dislikes += 1
+            }
+
+            return { ...post, likes, dislikes }
           }
-        }
-        return post
-      }),
-    )
-  }, [])
+          return post
+        }),
+      )
+      updateReaction(postId, reactions[postId] === 'dislike' ? null : 'dislike')
+    },
+    [reactions],
+  )
 
   useEffect(() => {
     const controller = new AbortController()
@@ -95,11 +116,11 @@ export const PostProvider = ({ children }: PostProviderProps) => {
         }
 
         const data = (await response.json()) as PostType[]
-        // Инициализируем счётчики если их нет в ответе API
+        // Добавляем генерацию случайных значений
         const initializedData = data.map(post => ({
           ...post,
-          likes: post.likes || 0,
-          dislikes: post.dislikes || 0,
+          likes: Math.floor(Math.random() * 51), // Генерация от 0 до 50
+          dislikes: Math.floor(Math.random() * 51),
         }))
         setPosts(initializedData)
       } catch (err) {
@@ -121,6 +142,7 @@ export const PostProvider = ({ children }: PostProviderProps) => {
     posts,
     isLoading,
     error,
+    reactions,
     handleLike,
     handleDislike,
     searchQuery,
