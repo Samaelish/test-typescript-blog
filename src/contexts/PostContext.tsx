@@ -1,19 +1,8 @@
 // PostContext.tsx
 import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react'
-import { PostType } from '../types/post'
+import { PostType, PostContextType } from '../types/post'
 
 const BASE_URL = 'https://jsonplaceholder.typicode.com'
-
-export interface PostContextType {
-  posts: PostType[]
-  isLoading: boolean
-  error: string | null
-  reactions: { [key: number]: 'like' | 'dislike' | null }
-  handleLike: (postId: number) => void
-  handleDislike: (postId: number) => void
-  searchQuery: string
-  setSearchQuery: (query: string) => void
-}
 
 const PostContext = createContext<PostContextType | undefined>(undefined)
 

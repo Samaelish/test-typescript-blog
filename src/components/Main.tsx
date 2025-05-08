@@ -34,7 +34,6 @@ const Main = ({ post }: Props): ReactElement => {
                       fill={currentReaction === 'like' ? '#219653' : '#888'}
                     />
                   </svg>
-
                   <span>{post.likes}</span>
                 </div>
                 <div className='main__dislikes'>
@@ -51,7 +50,6 @@ const Main = ({ post }: Props): ReactElement => {
                       fill={currentReaction === 'dislike' ? '#eb5757' : '#888'}
                     />
                   </svg>
-
                   <span>{post.dislikes}</span>
                 </div>
               </div>
